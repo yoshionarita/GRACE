@@ -13,7 +13,7 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // xibファイル(HomeTableViewCell)をHomeViewControllerに配置
+        // xibファイル(HomeTableViewCell)を上記homeViewControllerのTable Viewに配置
         let nib = UINib(nibName: "HomeTableViewCell", bundle: nil)
         homeTableView.registerNib(nib, forCellReuseIdentifier: "homeTableViewCell")
 
@@ -39,7 +39,7 @@ class HomeViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = true
 
         // Floating Buttonの配置
-        // createNewButton()
+        createNewButton()
     }
 
     override func didReceiveMemoryWarning() {
@@ -49,6 +49,28 @@ class HomeViewController: UIViewController {
     // ツールバーの非表示
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+
+    // Floating Buttonの設定
+    private func createNewButton() {
+        floatingButton = ActionButton(attachedToView: self.view, items: [])
+        floatingButton.action = { button in
+            print("Floating Button1 Tapped")
+
+            // Floating Buttonがタップされた際に画面遷移(Segue)
+            self.performSegueWithIdentifier("Post Composer", sender: self)
+        }
+
+        // Floating Buttonのバックグラウンド色を指定
+        floatingButton.backgroundColor = UIColor.clearColor()
+    }
+
+    // データを画面遷移の際に移動させる
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "Comment Composer" {
+            let commentViewController = segue.destinationViewController as! CommentViewController
+            commentViewController.post = sender as! Post
+        }
     }
 
 }
@@ -73,8 +95,20 @@ extension HomeViewController: UITableViewDataSource {
 
         // cellに代入したHomeTableViewCellを表示？
         cell.post = post[indexPath.row]
+        cell.delegate = self
 
         return cell
     }
+
+}
+
+extension HomeViewController: HomeTableViewCellDelegate {
+    func commentButtonTapped(post: Post) {
+        self.performSegueWithIdentifier("Comment Composer", sender: post)
+    }
+
+    /* func postImageTapped(post: Post) {
+        self.performSegueWithIdentifier("Comment Composer", sender: post)
+    } */
 
 }

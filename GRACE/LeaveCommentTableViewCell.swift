@@ -1,36 +1,24 @@
 import UIKit
 
-// HomeTableViewCellのプロトコル
-protocol HomeTableViewCellDelegate {
-    func commentButtonTapped(post: Post)
-    /* func postImageTapped(post: Post) */
-}
-
-class HomeTableViewCell: UITableViewCell {
+class LeaveCommentTableViewCell: UITableViewCell {
 
     @IBOutlet weak var userProfileImage: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var createdAtLabel: UILabel!
     @IBOutlet weak var postImage: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
-    @IBOutlet weak var commentButton: UIButton!
     @IBOutlet weak var userLikesLabel: UILabel!
     @IBOutlet weak var postTextLabel: UILabel!
 
     @IBOutlet weak var postTextLabelConstraint: NSLayoutConstraint!
 
-    // didSetでPostファイルからデータを取得しUIを更新
+    private var currentUserDidLike: Bool = false
+
     var post: Post! {
         didSet {
             updateUI()
         }
     }
-
-    // HomeTableViewCellのデレゲートを宣言
-    var delegate: HomeTableViewCellDelegate!
-
-    // 当初ユーザーはLikeをしていない
-    private var currentUserDidLike: Bool = false
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -59,24 +47,13 @@ class HomeTableViewCell: UITableViewCell {
         currentUserDidLike = post.userDidLike
     }
 
-    @IBAction func commentButtonTapped(sender: AnyObject) {
-
-        // コメントボタンタップ時に...
-        delegate?.commentButtonTapped(post)
-    }
-
-    /* Tap Gesture Recognizerを付けたPost画像からコメント画面へ遷移
-    @IBAction func postImageTapped(sender: AnyObject) {
-        delegate?.postImageTapped(post)
-    } */
-
     // 最新の画面を更新して表示
     private func updateUI() {
 
         // プロフィール画像を円形にする
         userProfileImage.layer.cornerRadius = userProfileImage.layer.bounds.width/2
         userProfileImage.clipsToBounds = true
-
+        
         // Post画像の角の丸みを指定
         postImage.layer.cornerRadius = 7.0
         postImage.clipsToBounds = true
@@ -96,7 +73,7 @@ class HomeTableViewCell: UITableViewCell {
             let likeButtonImageTapped: UIImage? = UIImage(named: "likeButtonUntapped")
             likeButton.setImage(likeButtonImageTapped!, forState: .Normal)
         }
-        
+
         // 最新のLike数に更新
         userLikesLabel.text = "\(post.numberOfLikes) Likes"
 
